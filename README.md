@@ -27,20 +27,19 @@ CLI Vector Editor — это консольное приложение на Pyth
 
 ## Структура проекта
 
-
-vector-editor
+vector-editor/
 │
-├── app
-│ ├── shapes.py
-│ ├── editor.py
-│ └── cli.py
+├── app/                   # Основной код приложения
+│   ├── shapes.py          # Классы геометрических фигур (Point, Segment, Circle, Square)
+│   ├── editor.py          # Бизнес-логика для создания, удаления и управления фигурами
+│   └── cli.py             # CLI интерфейс: обработка команд пользователя
 │
-├── tests
-│ └── test_editor.py
+├── tests/                 # Unit-тесты
+│   └── test_editor.py     # Тестирование логики editor.py
 │
-├── main.py
-├── requirements.txt
-└── README.md
+├── main.py                # Точка входа приложения
+├── requirements.txt       # Зависимости проекта
+└── README.md              # Документация проекта
 
 
 ---
