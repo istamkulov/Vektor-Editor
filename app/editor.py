@@ -1,53 +1,93 @@
-from .shapes import Point, Segment, Circle, Square
+import json
+from app.shapes import Point, Segment, Circle, Square, Rectangle, Oval
 
 
-class VectorEditor:
+class Editor:
 
     def __init__(self):
         self.shapes = []
 
-    def create_shape(self, shape_type: str, args):
+    def add_shape(self, shape):
+        self.shapes.append(shape)
 
-        try:
-
-            if shape_type == "point":
-                x, y = map(int, args)
-                shape = Point(x, y)
-
-            elif shape_type == "segment":
-                x1, y1, x2, y2 = map(int, args)
-                shape = Segment(x1, y1, x2, y2)
-
-            elif shape_type == "circle":
-                x, y, r = map(int, args)
-                shape = Circle(x, y, r)
-
-            elif shape_type == "square":
-                x, y, side = map(int, args)
-                shape = Square(x, y, side)
-
-            else:
-                raise ValueError("Unknown shape")
-
-            self.shapes.append(shape)
-
-            return "Shape created"
-
-        except Exception as e:
-            return f"Error: {e}"
+    def delete_shape(self, index):
+        if 0 <= index < len(self.shapes):
+            self.shapes.pop(index)
 
     def list_shapes(self):
+        for i, shape in enumerate(self.shapes):
+            print(f"{i}: {shape}")
 
-        if not self.shapes:
-            return ["No shapes"]
+    def save(self, filename):
 
-        return [f"{i+1}. {shape}" for i, shape in enumerate(self.shapes)]
+        data = []
 
-    def delete_shape(self, index: int):
+        for shape in self.shapes:
 
-        if index < 0 or index >= len(self.shapes):
-            return "Invalid index"
+            if isinstance(shape, Point):
+                data.append({"type": "point", "x": shape.x, "y": shape.y})
 
-        del self.shapes[index]
+            elif isinstance(shape, Segment):
+                data.append({
+                    "type": "segment",
+                    "x1": shape.x1,
+                    "y1": shape.y1,
+                    "x2": shape.x2,
+                    "y2": shape.y2
+                })
 
-        return "Shape deleted"
+            elif isinstance(shape, Circle):
+                data.append({"type": "circle", "x": shape.x, "y": shape.y, "r": shape.r})
+
+            elif isinstance(shape, Square):
+                data.append({"type": "square", "x": shape.x, "y": shape.y, "side": shape.side})
+
+            elif isinstance(shape, Rectangle):
+                data.append({
+                    "type": "rectangle",
+                    "x": shape.x,
+                    "y": shape.y,
+                    "width": shape.width,
+                    "height": shape.height
+                })
+
+            elif isinstance(shape, Oval):
+                data.append({
+                    "type": "oval",
+                    "x": shape.x,
+                    "y": shape.y,
+                    "rx": shape.rx,
+                    "ry": shape.ry
+                })
+
+        with open(filename, "w") as f:
+            json.dump(data, f)
+
+    def load(self, filename):
+
+        with open(filename) as f:
+            data = json.load(f)
+
+        self.shapes = []
+
+        for item in data:
+
+            t = item["type"]
+
+            if t == "point":
+                self.shapes.append(Point(item["x"], item["y"]))
+
+            elif t == "segment":
+                self.shapes.append(Segment(item["x1"], item["y1"], item["x2"], item["y2"]))
+
+            elif t == "circle":
+                self.shapes.append(Circle(item["x"], item["y"], item["r"]))
+
+            elif t == "square":
+                self.shapes.append(Square(item["x"], item["y"], item["side"]))
+
+            elif t == "rectangle":
+                self.shapes.append(Rectangle(item["x"], item["y"], item["width"], item["height"]))
+
+            elif t == "oval":
+                self.shapes.append(Oval(item["x"], item["y"], item["rx"], item["ry"]))
